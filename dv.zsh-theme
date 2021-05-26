@@ -19,6 +19,7 @@ ZSH_THEME_GIT_PROMPT_SUFFIX="$YS_VCS_PROMPT_SUFFIX"
 ZSH_THEME_GIT_PROMPT_DIRTY="$YS_VCS_PROMPT_DIRTY"
 ZSH_THEME_GIT_PROMPT_CLEAN="$YS_VCS_PROMPT_CLEAN"
 
+
 # HG info
 local hg_info='$(ys_hg_prompt_info)'
 ys_hg_prompt_info() {
@@ -34,6 +35,13 @@ ys_hg_prompt_info() {
 		echo -n "$YS_VCS_PROMPT_SUFFIX"
 	fi
 }
+local k8s_namespace='$(dv_get_k8s_namespace)'
+dv_get_k8s_namespace() {
+				if [[ $( pwd | grep "Development") ]]; then
+								name=$(kubens -c)
+								echo "k8sns: $name"
+				fi
+}
 
 local exit_code="%(?,,C:%{$fg[red]%}%?%{$reset_color%})"
 
@@ -47,14 +55,12 @@ local exit_code="%(?,,C:%{$fg[red]%}%?%{$reset_color%})"
 # % ys @ ys-mbp in ~/.oh-my-zsh on git:master x [21:47:42] C:0
 # $
 PROMPT="
-╭─%{$terminfo[bold]$fg[red]%}#%{$reset_color%} \
+╭─%{$terminfo[bold]$fg[red]%}#%{$reset_color%}\
 %(#,%{$bg[yellow]%}%{$fg[black]%}%n%{$reset_color%},%{$fg[cyan]%}%n) \
-%{$fg[white]%}@ \
-%{$fg[green]%}%m \
-%{$fg[white]%}in \
-%{$terminfo[bold]$fg[yellow]%}%~%{$reset_color%}\
+%{$terminfo[bold]$fg[yellow]%}%2~%{$reset_color%}\
 ${hg_info}\
-${git_info}\
+ %{$terminfo[bold]$fg[cyan]${k8s_namespace}$reset_color%}\
+${git_info} \
  \
-%{$fg[white]%}[%*] $exit_code
+%{$fg[white]%}$exit_code
 ╰─%{$terminfo[bold]$fg[cyan]%}>$fg[red]>$fg[yellow]>$fg[green]> %{$reset_color%}"
